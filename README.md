@@ -34,10 +34,10 @@ Until it is available in Community Plugins, install manually:
 - **Claude binary path** — absolute path to the `claude` executable. Leave empty to resolve `claude` from your login shell `PATH`.
 - **Model** — model alias passed to `--model` (e.g. `opus`, `sonnet`). Empty uses the Claude Code default.
 - **Permission mode** — how the agent handles tool use:
-  - **Default (ask)** — the CLI's normal prompting behaviour.
+  - **Default** — the CLI's normal prompting behaviour.
   - **Accept edits** — auto-approves file edits but still gates other actions (default).
-  - **Plan only** — proposes changes without writing files.
-  - **Bypass permissions** — approves every action, including arbitrary shell commands. Use only if you understand the risk.
+  - **Plan mode** — proposes changes without writing files.
+  - **Auto mode** — approves every action, including arbitrary shell commands. Use only if you understand the risk.
 
 ## Disclosures
 
