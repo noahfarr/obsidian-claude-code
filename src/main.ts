@@ -235,8 +235,9 @@ export default class ClaudeCodePlugin extends Plugin {
 			if (event.is_error) {
 				handlers.onError(event.result ?? 'Claude Code reported an error.');
 			}
+			const n = event.num_turns;
 			const turns =
-				typeof event.num_turns === 'number' ? `${event.num_turns} turns` : 'done';
+				typeof n === 'number' ? `${n} ${n === 1 ? 'turn' : 'turns'}` : 'done';
 			handlers.onResult(turns);
 		}
 	}
