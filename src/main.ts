@@ -29,7 +29,6 @@ interface StreamEvent {
 	message?: { content?: StreamContentBlock[] };
 	is_error?: boolean;
 	result?: string;
-	total_cost_usd?: number;
 	num_turns?: number;
 }
 
@@ -44,6 +43,7 @@ interface RunHandlers {
 
 export default class ClaudeCodePlugin extends Plugin {
 	settings!: ClaudeCodeSettings;
+	private activeProcesses = new Set<ChildProcess>();
 
 	async onload() {
 		await this.loadSettings();
@@ -69,7 +69,12 @@ export default class ClaudeCodePlugin extends Plugin {
 	}
 
 	onunload() {
-		// Obsidian detaches the plugin's leaves automatically on unload.
+		// Stop any Claude Code processes still running when the plugin unloads.
+		// (Obsidian detaches the plugin's leaves automatically.)
+		for (const child of this.activeProcesses) {
+			child.kill('SIGTERM');
+		}
+		this.activeProcesses.clear();
 	}
 
 	async loadSettings() {
@@ -164,6 +169,8 @@ export default class ClaudeCodePlugin extends Plugin {
 			return null;
 		}
 
+		this.activeProcesses.add(child);
+
 		// Feed the prompt over stdin, then close it so the CLI starts working.
 		child.stdin?.write(prompt);
 		child.stdin?.end();
@@ -193,6 +200,7 @@ export default class ClaudeCodePlugin extends Plugin {
 		});
 
 		child.on('close', (code) => {
+			this.activeProcesses.delete(child);
 			if (buffer.trim()) this.handleStreamLine(buffer.trim(), handlers);
 			handlers.onClose(code);
 		});
@@ -290,7 +298,7 @@ class ClaudeCodeView extends ItemView {
 					'e.g. Create a note "Reading List" and add my open papers…  (Enter to send, Shift+Enter for newline)',
 			},
 		});
-		this.inputEl.addEventListener('keydown', (evt) => {
+		this.registerDomEvent(this.inputEl, 'keydown', (evt) => {
 			if (evt.key === 'Enter' && !evt.shiftKey) {
 				evt.preventDefault();
 				this.send();
@@ -302,17 +310,17 @@ class ClaudeCodeView extends ItemView {
 
 		this.stopBtn = buttons.createEl('button', { text: 'Stop' });
 		this.stopBtn.disabled = true;
-		this.stopBtn.addEventListener('click', () => {
+		this.registerDomEvent(this.stopBtn, 'click', () => {
 			this.stop();
 		});
 
 		const newBtn = buttons.createEl('button', { text: 'New' });
-		newBtn.addEventListener('click', () => {
+		this.registerDomEvent(newBtn, 'click', () => {
 			this.newConversation();
 		});
 
 		this.sendBtn = buttons.createEl('button', { text: 'Send', cls: 'mod-cta' });
-		this.sendBtn.addEventListener('click', () => {
+		this.registerDomEvent(this.sendBtn, 'click', () => {
 			this.send();
 		});
 	}
