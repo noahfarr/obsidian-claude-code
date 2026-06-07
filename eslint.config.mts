@@ -30,4 +30,18 @@ export default tseslint.config(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	{
+		rules: {
+			// Teach the sentence-case rule about product proper nouns and the
+			// model aliases / file paths used in our UI strings.
+			'obsidianmd/ui/sentence-case': [
+				'error',
+				{
+					brands: ['Claude', 'Claude Code', 'Anthropic', 'Opus', 'Sonnet'],
+					// Lowercase CLI aliases and example paths shown verbatim in placeholders.
+					ignoreRegex: ['^/', '^opus$', '^sonnet$'],
+				},
+			],
+		},
+	},
 );

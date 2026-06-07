@@ -1,92 +1,52 @@
-# Obsidian Sample Plugin
+# Claude Code for Obsidian
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+Create and edit notes by chatting with the [Claude Code](https://docs.claude.com/en/docs/claude-code) agent, running headlessly inside your vault.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+> **Unofficial.** This is a community plugin and is not affiliated with, endorsed by, or supported by Anthropic. "Claude" and "Claude Code" are trademarks of Anthropic.
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
+## What it does
 
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and outputs a Notice on click.
-- Registers a global interval which logs 'setInterval' to the console.
+Adds a chat panel to the right sidebar. You type an instruction; the plugin runs the local `claude` command-line tool with your vault as its working directory. Claude Code can then read, create, and edit your notes as Markdown files, and the results stream back into the panel. Obsidian reloads any changed notes automatically.
 
-## First time developing plugins?
+Follow-up messages continue the same conversation (via `claude --continue`) until you start a new one.
 
-Quick starting guide for new plugin devs:
+## Requirements
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `src/main.ts` to `main.js`.
-- Make changes to `src/main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+- **Desktop only.** The plugin launches a local process and uses Node.js APIs, which are unavailable on Obsidian mobile.
+- **The Claude Code CLI must be installed and authenticated separately.** Install it from the [official instructions](https://docs.claude.com/en/docs/claude-code) and sign in (via a Claude subscription or an Anthropic API key) by running `claude` once in a terminal. This plugin does not bundle, install, or manage the CLI, and it does not store any credentials.
 
-## Releasing new releases
+## Installation
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+Until it is available in Community Plugins, install manually:
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+1. Build the plugin (`npm install && npm run build`) or download `main.js`, `manifest.json`, and `styles.css` from a release.
+2. Copy those three files into `<vault>/.obsidian/plugins/claude-code/`.
+3. Enable **Claude Code** under Settings → Community plugins.
 
-## Adding your plugin to the community plugin list
+## Usage
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+- Click the robot ribbon icon, or run the command **Open panel**.
+- Type an instruction (Enter to send, Shift+Enter for a newline) and Claude Code works inside your vault.
+- **Stop** ends the current run; **New** starts a fresh conversation.
 
-## How to use
+## Settings
 
-- Clone this repo.
-- Make sure your NodeJS is at least v18 (`node --version`).
-- `npm i` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+- **Claude binary path** — absolute path to the `claude` executable. Leave empty to resolve `claude` from your login shell `PATH`.
+- **Model** — model alias passed to `--model` (e.g. `opus`, `sonnet`). Empty uses the Claude Code default.
+- **Permission mode** — how the agent handles tool use:
+  - **Default (ask)** — the CLI's normal prompting behaviour.
+  - **Accept edits** — auto-approves file edits but still gates other actions (default).
+  - **Plan only** — proposes changes without writing files.
+  - **Bypass permissions** — approves every action, including arbitrary shell commands. Use only if you understand the risk.
 
-## Manually installing the plugin
+## Disclosures
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+This plugin makes the following actions that the Obsidian developer policies require be disclosed:
 
-## Improve code quality with eslint
+- **Network use.** The plugin itself makes no network requests, but the Claude Code CLI it launches sends your prompts and the contents of relevant notes to Anthropic's API to generate responses. See Anthropic's [privacy policy](https://www.anthropic.com/legal/privacy). No telemetry is collected by this plugin.
+- **Running a local program.** The plugin executes the `claude` binary as a child process, with your vault directory as its working directory.
+- **File access outside the vault.** Claude Code is a general-purpose agent. Through its built-in tools it can read and modify files outside the vault and run shell commands, subject to the selected permission mode. Choose a permission mode you are comfortable with, and review changes (e.g. with version control) before trusting them.
 
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code.
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/obsidianmd/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
+## License
 
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-	"fundingUrl": "https://buymeacoffee.com"
-}
-```
-
-If you have multiple URLs, you can also do:
-
-```json
-{
-	"fundingUrl": {
-		"Buy Me a Coffee": "https://buymeacoffee.com",
-		"GitHub Sponsor": "https://github.com/sponsors",
-		"Patreon": "https://www.patreon.com/"
-	}
-}
-```
-
-## API Documentation
-
-See https://docs.obsidian.md
+[MIT](LICENSE)

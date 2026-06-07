@@ -1,8 +1,100 @@
-/*
+.claude-code-view {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	gap: var(--size-4-2);
+	padding: var(--size-4-2);
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.claude-code-transcript {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+	padding-right: var(--size-4-1);
+}
 
-If your plugin does not need CSS, delete this file.
+.claude-code-msg {
+	border-radius: var(--radius-m);
+	padding: var(--size-4-2) var(--size-4-3);
+	font-size: var(--font-ui-small);
+	line-height: 1.5;
+}
 
-*/
+.claude-code-msg-user {
+	background: var(--background-modifier-hover);
+	align-self: flex-end;
+	max-width: 90%;
+	white-space: pre-wrap;
+}
+
+.claude-code-msg-assistant {
+	background: var(--background-secondary);
+}
+
+.claude-code-msg-assistant > :first-child {
+	margin-top: 0;
+}
+
+.claude-code-msg-assistant > :last-child {
+	margin-bottom: 0;
+}
+
+.claude-code-tool {
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	padding: var(--size-2-1) 0;
+	display: flex;
+	gap: var(--size-4-1);
+	align-items: baseline;
+}
+
+.claude-code-tool-name {
+	color: var(--text-accent);
+	font-weight: var(--font-semibold);
+}
+
+.claude-code-error {
+	color: var(--text-error);
+	white-space: pre-wrap;
+	font-size: var(--font-ui-smaller);
+}
+
+.claude-code-meta {
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	text-align: center;
+}
+
+.claude-code-inputrow {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-1);
+}
+
+.claude-code-input {
+	width: 100%;
+	resize: vertical;
+	min-height: 4.5em;
+	font-family: inherit;
+}
+
+.claude-code-buttons {
+	display: flex;
+	gap: var(--size-4-1);
+	justify-content: space-between;
+	align-items: center;
+}
+
+.claude-code-status {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	flex: 1 1 auto;
+}
+
+.claude-code-spinner {
+	color: var(--text-accent);
+}
