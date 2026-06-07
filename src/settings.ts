@@ -19,7 +19,7 @@ export interface ClaudeCodeSettings {
 export const DEFAULT_SETTINGS: ClaudeCodeSettings = {
 	claudeBinPath: '',
 	model: '',
-	permissionMode: 'acceptEdits',
+	permissionMode: 'default',
 };
 
 export class ClaudeCodeSettingTab extends PluginSettingTab {
